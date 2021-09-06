@@ -99,6 +99,8 @@ type VerifyOptions struct {
 	// signatures are verified, the rest are ignored and ErrTooManySignatures
 	// is returned. If zero, there is no maximum.
 	MaxVerifications int
+
+	AllowInsecureBodyLength bool
 }
 
 // Verify checks if a message's signatures are valid. It returns one
@@ -355,7 +357,13 @@ func verify(h header, r io.Reader, sigField, sigValue string, options *VerifyOpt
 	// the message body to not be signed. Reject messages which have it set.
 	if _, ok := params["l"]; ok {
 		// TODO: technically should be policyError
-		return verif, failError("message contains an insecure body length tag")
+		if options != nil {
+			if !options.AllowInsecureBodyLength {
+				return verif, failError("message contains an insecure body length tag")
+			}
+		} else {
+			return verif, failError("message contains an insecure body length tag")
+		}
 	}
 
 	// Parse body hash and signature

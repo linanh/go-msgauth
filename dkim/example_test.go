@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/emersion/go-msgauth/dkim"
+	"github.com/linanh/go-msgauth/dkim"
 )
 
 var (

@@ -19,9 +19,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/emersion/go-milter"
-	"github.com/emersion/go-msgauth/authres"
-	"github.com/emersion/go-msgauth/dkim"
+	"github.com/linanh/go-milter"
+	"github.com/linanh/go-msgauth/authres"
+	"github.com/linanh/go-msgauth/dkim"
 	"golang.org/x/crypto/ed25519"
 )
 
