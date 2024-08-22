@@ -294,9 +294,9 @@ func parseResult(s string) (Result, error) {
 }
 
 func parseParam(s string) (k string, v string, err error) {
-	kv := strings.SplitN(s, "=", 2)
-	if len(kv) != 2 {
+	k, v, ok := strings.Cut(s, "=")
+	if !ok {
 		return "", "", errors.New("msgauth: malformed authentication method and value")
 	}
-	return strings.ToLower(strings.TrimSpace(kv[0])), strings.TrimSpace(kv[1]), nil
+	return strings.ToLower(strings.TrimSpace(k)), strings.TrimSpace(v), nil
 }
