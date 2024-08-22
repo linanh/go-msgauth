@@ -101,6 +101,8 @@ type VerifyOptions struct {
 	MaxVerifications int
 
 	AllowInsecureBodyLength bool
+	// ReplaceHeaderKeys can use another header value to replace origin
+	ReplaceHeaderKeys map[string]string
 }
 
 // Verify checks if a message's signatures are valid. It returns one
@@ -391,7 +393,20 @@ func verify(h header, r io.Reader, sigField, sigValue string, options *VerifyOpt
 	hasher.Reset()
 	picker := newHeaderPicker(h)
 	for _, key := range headerKeys {
-		kv := picker.Pick(key)
+		// use new header value replace origin
+		newKey := ""
+		ok := false
+		if len(options.ReplaceHeaderKeys) > 0 {
+			newKey, ok = options.ReplaceHeaderKeys[key]
+		}
+		kv := ""
+		if ok {
+			kv = picker.Pick(newKey)
+			kv = strings.Replace(kv, newKey, key, 1)
+		} else {
+			kv = picker.Pick(key)
+		}
+
 		if kv == "" {
 			// The field MAY contain names of header fields that do not exist
 			// when signed; nonexistent header fields do not contribute to the
