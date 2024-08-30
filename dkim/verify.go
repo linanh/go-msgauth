@@ -103,6 +103,7 @@ type VerifyOptions struct {
 	AllowInsecureBodyLength bool
 	// ReplaceHeaderKeys can use another header value to replace origin
 	ReplaceHeaderKeys map[string]string
+	EnableSha1        bool
 }
 
 // Verify checks if a message's signatures are valid. It returns one
@@ -318,9 +319,13 @@ func verify(h header, r io.Reader, sigField, sigValue string, options *VerifyOpt
 	var hash crypto.Hash
 	switch hashAlgo {
 	case "sha1":
-		// RFC 8301 section 3.1: rsa-sha1 MUST NOT be used for signing or
-		// verifying.
-		return verif, permFailError(fmt.Sprintf("hash algorithm too weak: %v", hashAlgo))
+		if options.EnableSha1 {
+			hash = crypto.SHA1
+		} else {
+			// RFC 8301 section 3.1: rsa-sha1 MUST NOT be used for signing or
+			// verifying.
+			return verif, permFailError(fmt.Sprintf("hash algorithm too weak: %v", hashAlgo))
+		}
 	case "sha256":
 		hash = crypto.SHA256
 	default:
